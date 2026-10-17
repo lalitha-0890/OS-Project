@@ -1,340 +1,167 @@
-# Linux IPC Monitoring and Message Transfer System
+# Mini Linux Shell with Background Job Management
 
-## Project Title
+## 1. Project Overview
 
-**Linux IPC Monitoring and Message Transfer System**
+The **Mini Linux Shell with Background Job Management** is a simple command-line shell developed using C. It demonstrates basic Linux shell functionality, process creation, command execution, and background process management.
 
-An integrated Linux application that demonstrates Inter-Process Communication using anonymous pipes and named FIFOs, while showcasing process management, system calls, memory management, filesystem resources, signals, and thread synchronization — all within one connected message-transfer workflow.
+The project allows users to execute Linux commands, run processes in the background, view job information, control process execution, and access command history.
 
----
+## 2. Objectives
 
-## Problem Statement
+- To understand how a Linux shell works.
+- To implement process creation using `fork()`.
+- To execute Linux commands using `execvp()`.
+- To manage foreground and background processes.
+- To track processes using Process IDs (PIDs).
+- To implement job listing and process control.
+- To understand Linux system calls and process management.
 
-Operating Systems concepts like process management, inter-process communication, memory management, and file systems are often taught theoretically. This project provides a **hands-on, integrated** implementation where all six Course Outcomes (CO-1 to CO-6) are demonstrated within a single, real message-transfer application — not as separate toy programs.
+## 3. Technologies Used
 
----
-
-## Objectives
-
-1. Build one integrated application that transfers real messages between processes
-2. Demonstrate the OS as a service layer through actual system calls with visible return values
-3. Show real process creation, PIDs, lifecycle, and synchronization
-4. Implement working anonymous pipe and named FIFO transport modes
-5. Visualize memory management and Copy-on-Write behavior
-6. Connect FIFO implementation with Linux file-system concepts (inode, file descriptors)
-7. Demonstrate thread race conditions and mutex-based synchronization
-8. Provide controlled signal handling and clean resource management
-
----
-
-## CO Mapping
-
-| CO | Module | Concepts | Key System Calls |
-|----|--------|----------|------------------|
-| CO-1 | `ipc_session.c` | User space, Kernel space, System calls, OS service layer | `pipe()`, `fork()`, `read()`, `write()`, `open()`, `close()`, `mkfifo()` |
-| CO-2 | `ipc_session.c` | Process abstraction, fork, PIDs, lifecycle, synchronization | `fork()`, `getpid()`, `getppid()`, `waitpid()`, `_exit()` |
-| CO-3 | `ipc_session.c` | Anonymous pipes, Named pipes (FIFOs), Signals, Synchronization | `pipe()`, `mkfifo()`, `open()`, `read()`, `write()`, `close()`, `sigaction()`, `kill()` |
-| CO-4 | `ipc_session.c` | Address space, Stack, Heap, Data, Text, Copy-on-Write, malloc/free | `fork()`, `malloc()`, `free()` |
-| CO-5 | `ipc_session.c` | File descriptors, inode, FIFO special file, stat, file types | `mkfifo()`, `open()`, `read()`, `write()`, `close()`, `stat()`, `unlink()` |
-| CO-6 | `ipc_threads.c` | POSIX threads processing real IPC messages, Mutex-protected statistics | `pthread_create()`, `pthread_join()`, `pthread_mutex_lock()`, `pthread_mutex_unlock()` |
-
----
-
-## Architecture
-
-```
-OS_Project/
-│
-├── README.md
-├── Makefile
-│
-├── include/
-│   ├── common.h              (shared utilities)
-│   ├── ipc_session.h         (integrated IPC session — CORE)
-│   ├── co1_system_calls.h    (supporting: system-call verification)
-│   ├── co2_process_control.h (supporting: process control demo)
-│   ├── co3_ipc.h             (supporting: IPC concepts demo)
-│   ├── co4_memory.h          (supporting: memory diagnostic)
-│   ├── co5_files.h           (supporting: filesystem diagnostic)
-│   └── co6_threads.h         (supporting: concurrency diagnostic)
-│
-├── src/
-│   ├── main.c                (menu system)
-│   ├── common.c              (utility functions)
-│   ├── ipc_session.c         (CORE: integrated message-transfer system)
-│   ├── co1_system_calls.c    (supporting module)
-│   ├── co2_process_control.c (supporting module)
-│   ├── co3_ipc.c             (supporting module)
-│   ├── co4_memory.c          (supporting module)
-│   ├── co5_files.c           (supporting module)
-│   └── co6_threads.c         (supporting module)
-│
-├── docs/
-│   ├── architecture.md
-│   ├── system_calls.md
-│   └── demonstration.md
-│
-└── tests/
-    └── test_script.sh
-```
-
----
-
-## Technologies
-
-- **Language:** C (C99/C11)
-- **Platform:** Linux / Ubuntu (WSL compatible)
+- **Programming Language:** C
+- **Operating System:** Ubuntu Linux through WSL
 - **Compiler:** GCC
-- **APIs:** POSIX system calls, POSIX Threads (pthreads)
-- **No external frameworks or libraries**
+- **System Interface:** POSIX process-management functions
 
----
+## 4. Features
 
-## Compilation Instructions
+- Execute Linux commands.
+- Run commands in the background using `&`.
+- List background jobs and their status.
+- Display process IDs (PIDs).
+- Stop, resume, and terminate background processes.
+- Maintain command history.
+- Change the current working directory.
+- Display job execution information, including duration where supported.
 
-### Prerequisites
+## 5. System Calls and Functions
+
+| Function | Purpose |
+|---|---|
+| `fork()` | Creates a child process. |
+| `execvp()` | Executes a command in the child process. |
+| `waitpid()` | Waits for or checks the status of a child process. |
+| `kill()` | Sends signals to processes. |
+| `chdir()` | Changes the current working directory. |
+| `time()` | Obtains time information for tracking job duration. |
+| `difftime()` | Calculates the difference between two time values. |
+
+## 6. Project Structure
+
+```text
+OSLab/
+├── mini_shell.c
+├── mini_shell
+└── README.md
+```
+
+- `mini_shell.c` — Contains the source code.
+- `mini_shell` — The compiled executable generated by GCC.
+- `README.md` — Project documentation.
+
+## 7. Installation and Execution
+
+### Step 1: Open Ubuntu WSL
+
+Open your Ubuntu terminal and navigate to the project directory.
 
 ```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install gcc make
+cd ~/OSLab
 ```
 
-### Build
+### Step 2: Compile the program
 
 ```bash
-cd OS_Project
-make
+gcc -Wall -Wextra -std=c11 mini_shell.c -o mini_shell
 ```
 
-This creates the executable at `build/os_project`.
-
-### Clean
+### Step 3: Run the shell
 
 ```bash
-make clean
+./mini_shell
 ```
 
----
+The mini shell should start and display its command prompt.
 
-## Execution Instructions
+## 8. Example Usage
 
-### Run the program
+### Execute a command
 
 ```bash
-./build/os_project
+ls
 ```
 
-### Menu Options
+Displays the files and directories in the current directory.
 
-```
-===========================================
-  LINUX IPC MONITORING & MESSAGE TRANSFER
-===========================================
-
-  1. Start integrated IPC session — anonymous pipe
-  2. Start integrated IPC session — named FIFO
-  3. Run complete end-to-end demonstration
-  4. Inspect IPC resources and file descriptors
-  5. Run memory/Copy-on-Write diagnostic
-  6. Run concurrency and mutex diagnostic
-  7. Run system-call verification instructions
-  8. Exit safely
-
-Choose an option:
-```
-
----
-
-## Module Explanations
-
-### Integrated IPC Session (`ipc_session.c`) — CORE
-
-This is the main application. It implements a real end-to-end message-transfer workflow:
-
-**Mode A: Anonymous Pipe**
-- Creates a real anonymous pipe with `pipe()`
-- Forks a child process (receiver) from the parent (sender)
-- Transfers actual user-entered messages byte-by-byte through the pipe
-- Uses newline delimiters to separate messages
-- Child sends SIGUSR1 to parent as ready notification
-- Parent waits for child with `waitpid()`
-- Statistics tracked with mutex protection
-
-**Mode B: Named FIFO**
-- Creates a real FIFO with `mkfifo()` at `/tmp/os_project_fifo`
-- Displays FIFO metadata with `stat()` (inode, type, permissions)
-- Forks reader and writer processes
-- Transfers real messages through the FIFO
-- Properly cleans up with `unlink()`
-
-**Signals**
-- SIGUSR1: Child-to-parent ready notification
-- SIGINT: Controlled shutdown
-- Uses `sigaction()` for safe signal handling
-- Async-signal-safe handlers (no printf in handlers)
-
-**Memory Management**
-- Message buffers allocated with `malloc()`
-- Copy-on-Write demonstration with controlled variable
-- Proper `free()` during cleanup
-
-**Concurrency (CO-6)**
-- 3 worker threads process actual messages received through pipe/FIFO
-- Thread-safe message queue with mutex protection
-- Mutex-protected shared IPC statistics (messages received/processed, bytes processed)
-- `pthread_join()` ensures all workers finish before final statistics
-
----
-
-### Supporting Diagnostics (Options 4-7)
-
-These provide focused demonstrations of individual CO concepts:
-
-- **Option 4:** File descriptors, FIFO creation, `stat()` metadata, inode display
-- **Option 5:** Process address space, Copy-on-Write, `malloc()`/`free()`
-- **Option 6:** Race condition (no mutex) vs. mutex solution
-- **Option 7:** System-call verification instructions and `strace` commands
-
----
-
-## Important System Calls
-
-| System Call | Purpose |
-|-------------|---------|
-| `pipe()` | Create anonymous pipe |
-| `fork()` | Create child process |
-| `read()` | Read from file descriptor |
-| `write()` | Write to file descriptor |
-| `open()` | Open file/FIFO |
-| `close()` | Close file descriptor |
-| `mkfifo()` | Create named pipe (FIFO) |
-| `unlink()` | Remove file/directory entry |
-| `waitpid()` | Wait for child termination |
-| `getpid()` | Get process ID |
-| `getppid()` | Get parent process ID |
-| `sigaction()` | Install signal handler |
-| `kill()` | Send signal to process |
-| `stat()` | Get file metadata |
-| `malloc()` | Allocate heap memory |
-| `free()` | Free heap memory |
-| `pthread_create()` | Create thread |
-| `pthread_join()` | Wait for thread |
-| `pthread_mutex_lock()` | Lock mutex |
-| `pthread_mutex_unlock()` | Unlock mutex |
-
----
-
-## Expected Output
-
-### Anonymous Pipe Session
-
-```
-===========================================
-  INTEGRATED IPC SESSION — ANONYMOUS PIPE
-===========================================
-
---- CO-1/CO-5: Creating Anonymous Pipe ---
-  pipe() returned: pipefd[0] = 3 (read end)
-                    pipefd[1] = 4 (write end)
-
---- CO-2: Forking Child Process ---
-  [Parent PID=4903] Child created with PID=4904
-  [Child  PID=4904] Message 1 received (17 bytes): "Hello from parent"
-  [Child  PID=4904] Message 2 received (14 bytes): "Second message"
-
-  +----------------------------------------+
-  |        SESSION STATISTICS              |
-  +----------------------------------------+
-  | Messages sent:      2                  |
-  | Messages received:  2                  |
-  | Bytes transferred:  31                 |
-  | Errors:             0                  |
-  +----------------------------------------+
-```
-
-### Named FIFO Session
-
-```
-===========================================
-  INTEGRATED IPC SESSION — NAMED PIPE (FIFO)
-===========================================
-
---- CO-5: Creating Named Pipe (FIFO) ---
-  mkfifo() succeeded — FIFO created at /tmp/os_project_fifo
-  stat() results:
-    File type:    FIFO (named pipe)
-    Inode number: 4154
-    Permissions:  644
-
-  [Reader Child PID=4944] Message 1 received (14 bytes): "Hello via FIFO"
-  [Writer Parent PID=4943] FIFO removed successfully.
-```
-
----
-
-## Viva Questions
-
-1. **What is a system call?**
-   A system call is a controlled entry point into the kernel that allows a user-space program to request a service from the OS.
-
-2. **What happens during `fork()`?**
-   The kernel creates a new process (child) that is a copy of the calling process (parent). Both continue execution from the same point.
-
-3. **What is Copy-on-Write?**
-   After `fork()`, parent and child share the same physical memory pages. The kernel only creates a separate copy when one process modifies a page.
-
-4. **What is the difference between an anonymous pipe and a FIFO?**
-   An anonymous pipe has no filesystem pathname and can only be used between related processes. A FIFO has a pathname and can be used between unrelated processes.
-
-5. **What is a zombie process?**
-   A zombie is a process that has terminated but whose exit status has not been read by the parent (via `waitpid()`).
-
-6. **What is a race condition?**
-   A race condition occurs when multiple threads access shared data concurrently, and the final result depends on the order of execution.
-
-7. **How does a mutex solve the race condition?**
-   A mutex ensures mutual exclusion: only one thread can hold the mutex at a time, so only one thread can execute the critical section.
-
-8. **What is an inode?**
-   An inode is a data structure on disk that stores metadata about a file (type, permissions, size, owner, etc.).
-
-9. **Why is a FIFO visible in the filesystem but an anonymous pipe is not?**
-   A FIFO has a directory entry (name → inode mapping), while an anonymous pipe exists only as a pair of file descriptors in the kernel.
-
-10. **What are the standard file descriptors?**
-    0 = stdin, 1 = stdout, 2 = stderr.
-
----
-
-## Demonstration Sequence
-
-1. **Compile:** `make`
-2. **Run:** `./build/os_project`
-3. **Select option 1** for anonymous pipe session
-4. **Enter messages** and observe real transfer
-5. **Select option 2** for FIFO session
-6. **Run `ls -l /tmp/os_project_fifo`** in another terminal to see the FIFO
-7. **Select option 3** for complete end-to-end demonstration
-
----
-
-## strace Verification
+### Run a background process
 
 ```bash
-# Trace all relevant system calls
-strace -f -e trace=pipe,pipe2,fork,clone,read,write,openat,close,mkfifo,wait4 ./build/os_project
-
-# Inspect FIFO (before cleanup)
-ls -l /tmp/os_project_fifo
-stat /tmp/os_project_fifo
+sleep 30 &
 ```
+
+Runs the `sleep` command as a background process for approximately 30 seconds.
+
+### View background jobs
+
+```bash
+jobs
+```
+
+Displays the background jobs tracked by the shell, including their process IDs and status where implemented.
+
+### Control processes
+
+Use the stop, resume, and termination commands implemented in the shell to demonstrate process control.
+
+### View command history
+
+Use the history command supported by the shell to display previously entered commands.
+
+**Note:** The exact output and supported command syntax depend on the implementation in `mini_shell.c`.
+
+## 9. How It Works
+
+1. The shell accepts a command from the user.
+2. It parses the command and its arguments.
+3. It uses `fork()` to create a child process for external commands.
+4. The child uses `execvp()` to execute the requested program.
+5. For foreground commands, the parent waits for the child as required.
+6. For background commands, the shell records the process information and returns to the prompt.
+7. The shell tracks jobs and provides process-control operations.
+
+## 10. Testing
+
+The project can be tested using commands such as `ls` and `sleep 30 &`.
+
+Testing should verify:
+
+- Successful compilation and execution.
+- Foreground command execution.
+- Background process creation.
+- Display of job numbers and PIDs.
+- Correct job-status updates.
+- Stop, resume, and termination operations.
+- Command history functionality.
+
+## 11. Limitations
+
+This project is a simplified shell and is not intended to replace Bash. Advanced features such as full shell scripting, pipelines, input/output redirection, and comprehensive terminal job control may not be implemented.
+
+## 12. Future Enhancements
+
+- Add support for pipes and I/O redirection.
+- Improve error handling and invalid-command messages.
+- Enhance job-status tracking and cleanup.
+- Add command-line editing and more shell features.
+- Implement a more comprehensive job-control mechanism.
+
+## 13. Conclusion
+
+The Mini Linux Shell project provides practical experience with C programming and Linux process management. It demonstrates how commands are executed, how child processes are created, and how background jobs can be monitored and controlled. It helps develop a better understanding of operating-system concepts and system calls.
 
 ---
 
-## Limitations
-
-- The zombie demonstration is disabled by default (enable in `co2_process_control.c`)
-- CO-6 race condition may not always show incorrect results (depends on timing)
-- Address values shown in CO-4 vary due to ASLR
-- This is an educational demonstration, not a production system
+**Project:** Mini Linux Shell with Background Job Management  
+**Language:** C  
+**Environment:** Ubuntu WSL  
+**Compiler:** GCC
